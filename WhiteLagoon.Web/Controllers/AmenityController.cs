@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WhiteLagoon.Application.Common.Interfaces;
+using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Web.ViewModels;
 
@@ -8,22 +8,24 @@ namespace WhiteLagoon.Web.Controllers
 {
     public class AmenityController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public AmenityController(IUnitOfWork unitOfWork)
+        private readonly IAmenityService _amenityService;
+        private readonly IVillaService _villaService;
+        public AmenityController(IVillaService villaService, IAmenityService amenityService)
         {
-            _unitOfWork = unitOfWork;
+            _villaService = villaService;
+            _amenityService = amenityService;
         }
         public IActionResult Index()
         {
-            List<Amenity> AmenityList = _unitOfWork.Amenity.GetAll(includeProperties: "Villa").ToList();
+            List<Amenity> AmenityList = _amenityService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
             return View(AmenityList);
         }
+
         public IActionResult Create()
         {
-
             AmenityVM AmenityVM = new()
             {
-                VillaList = _unitOfWork.Villa.GetAll().ToList().Select(u => new SelectListItem
+                VillaList = _villaService.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
@@ -37,13 +39,12 @@ namespace WhiteLagoon.Web.Controllers
         {
             //Remove some validations
             ModelState.Remove("Amenity.Villa");
-          
 
-            if (ModelState.IsValid )
+            if (ModelState.IsValid)
             {
-                _unitOfWork.Amenity.Add(AmenityVM.Amenity);
-                _unitOfWork.Save();
-                TempData["success"] = "Amenity created Successfully";
+                _amenityService.Create(AmenityVM?.Amenity);
+
+                TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(AmenityVM);
@@ -53,12 +54,12 @@ namespace WhiteLagoon.Web.Controllers
         {
             AmenityVM AmenityVM = new()
             {
-                VillaList = _unitOfWork.Villa.GetAll().ToList().Select(u => new SelectListItem
+                VillaList = _villaService.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _unitOfWork.Amenity.Get(u => u.Id == amenityId)
+                Amenity = _amenityService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -73,9 +74,9 @@ namespace WhiteLagoon.Web.Controllers
             ModelState.Remove("Amenity.Villa");
             if (ModelState.IsValid)
             {
-                _unitOfWork.Amenity.Update(AmenityVM.Amenity);
-                _unitOfWork.Save();
-                TempData["success"] = "Amenity updated Successfully";
+                _amenityService.Update(AmenityVM?.Amenity);
+
+                TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(AmenityVM);
@@ -85,12 +86,12 @@ namespace WhiteLagoon.Web.Controllers
         {
             AmenityVM AmenityVM = new()
             {
-                VillaList = _unitOfWork.Villa.GetAll().ToList().Select(u => new SelectListItem
+                VillaList = _amenityService.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _unitOfWork.Amenity.Get(u => u.Id == amenityId)
+                Amenity = _amenityService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -102,11 +103,11 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult Delete(AmenityVM AmenityVM)
         {
-            Amenity? objFromDb = _unitOfWork.Amenity.Get(x => x.Id == AmenityVM.Amenity.Id);
+            Amenity? objFromDb = _amenityService.Get(AmenityVM?.Amenity?.Id ?? 0);
             if (objFromDb != null)
             {
-                _unitOfWork.Amenity.Remove(objFromDb);
-                _unitOfWork.Save();
+                _amenityService.Delete(objFromDb);
+
                 TempData["success"] = "Amenity Deleted Successfully";
                 return RedirectToAction(nameof(Index));
             }

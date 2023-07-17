@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Common.Utility;
+using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
 
 namespace WhiteLagoon.Web.Controllers
@@ -9,64 +9,41 @@ namespace WhiteLagoon.Web.Controllers
     [Authorize(Roles = SD.Role_Admin)]
     public class DashboardController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public DashboardController(IUnitOfWork unitOfWork)
+        private readonly IDashboardService _dashboadService;
+
+        public DashboardController(IDashboardService dashboadService)
         {
-            _unitOfWork = unitOfWork;
+            _dashboadService = dashboadService;
         }
 
         public IActionResult Index()
         {
             return View();
         }
-
         public async Task<IActionResult> GetTotalBookingsChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetBookingsChartDataAsync();
 
-            var data = new
-            {
-                series = dashboardRadialBarChartVM.Series, //new int[] { 30 },
-                totalCount = dashboardRadialBarChartVM.TotalCount,
-                increaseDecreaseRatio = dashboardRadialBarChartVM.IncreaseDecreaseRatio,
-                hasRatioIncreased = dashboardRadialBarChartVM.HasRatioIncreased,
-                increaseDecreaseAmount = dashboardRadialBarChartVM.IncreaseDecreaseAmount
-            };
+            var data = ResultData(dashboardRadialBarChartVM);                            
             return Json(data);
         }
         public async Task<IActionResult> GetTotalRevenueChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetRevenueChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRevenueChartDataAsync();
 
-            var data = new
-            {
-                series = dashboardRadialBarChartVM.Series, //new int[] { 30 },
-                totalCount = dashboardRadialBarChartVM.TotalCount,
-                increaseDecreaseRatio = dashboardRadialBarChartVM.IncreaseDecreaseRatio,
-                hasRatioIncreased = dashboardRadialBarChartVM.HasRatioIncreased,
-                increaseDecreaseAmount = dashboardRadialBarChartVM.IncreaseDecreaseAmount
-            };
+            var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
-
         public async Task<IActionResult> GetRegisteredUserChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetRegisteredUserChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRegisteredUserChartDataAsync();
 
-            var data = new
-            {
-                series = dashboardRadialBarChartVM.Series, //new int[] { 30 },
-                totalCount = dashboardRadialBarChartVM.TotalCount,
-                increaseDecreaseRatio = dashboardRadialBarChartVM.IncreaseDecreaseRatio,
-                hasRatioIncreased = dashboardRadialBarChartVM.HasRatioIncreased,
-                increaseDecreaseAmount = dashboardRadialBarChartVM.IncreaseDecreaseAmount
-            };
+            var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
-
         public async Task<IActionResult> GetMemberAndBookingChartData()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _unitOfWork.Dashboard.GetMemberAndBookingChartDataAsync();
+            DashboardLineChartVM dashboardLineChartVM = await _dashboadService.GetMemberAndBookingChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
@@ -78,10 +55,9 @@ namespace WhiteLagoon.Web.Controllers
             // Manually serialize the data to JSON
             return Json(data);
         }
-
         public async Task<IActionResult> GetCustomerBookingsPieChartData()
         {
-            DashboardPieChartVM dashboardPieChartVM = await _unitOfWork.Dashboard.GetBookingPieChartDataAsync();
+            DashboardPieChartVM dashboardPieChartVM = await _dashboadService.GetBookingPieChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
@@ -92,6 +68,17 @@ namespace WhiteLagoon.Web.Controllers
 
             // Manually serialize the data to JSON
             return Json(data);
+        }
+        private static object ResultData(RadialBarChartVM dashboardRadialBarChartVM)
+        {
+            return new
+            {
+                series = dashboardRadialBarChartVM.Series, //new int[] { 30 },
+                totalCount = dashboardRadialBarChartVM.TotalCount,
+                increaseDecreaseRatio = dashboardRadialBarChartVM.IncreaseDecreaseRatio,
+                hasRatioIncreased = dashboardRadialBarChartVM.HasRatioIncreased,
+                increaseDecreaseAmount = dashboardRadialBarChartVM.IncreaseDecreaseAmount
+            };
         }
     }
 }

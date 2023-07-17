@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Web.ViewModels;
@@ -13,14 +12,11 @@ namespace WhiteLagoon.Web.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUnitOfWork _unitOfWork;
 
         public AccountController(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            SignInManager<ApplicationUser> signInManager,
-            IUnitOfWork unitOfWork)
+            SignInManager<ApplicationUser> signInManager)
         {
-            _unitOfWork = unitOfWork;
             _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -36,6 +32,7 @@ namespace WhiteLagoon.Web.Controllers
 
             return View(loginVM);
         }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginVM loginVM)
         {
@@ -139,11 +136,13 @@ namespace WhiteLagoon.Web.Controllers
             });
             return View(registerVM);
         }
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
         public IActionResult AccessDenied()
         {
             return View();

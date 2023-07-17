@@ -1,35 +1,35 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using SkiaSharp;
-using Svg;
-using Syncfusion.DocIO.DLS;
+﻿using Microsoft.AspNetCore.Mvc;
 using Syncfusion.Presentation;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Net;
-using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Common.Utility;
+using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Web.ViewModels;
 
 namespace WhiteLagoon.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IVillaService _villaService;
+        private readonly IVillaNumberService _villaNumberService;
+        private readonly IBookingService _bookingService;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public HomeController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public HomeController(
+            IWebHostEnvironment webHostEnvironment,
+            IVillaService villaService,
+            IVillaNumberService villaNumberService,
+            IBookingService bookingService)
         {
-            _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _villaService = villaService;
+            _villaNumberService = villaNumberService;
+            _bookingService = bookingService;
         }
         public IActionResult Index()
         {
             HomeVM homeVM = new ()
             {
-                VillaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity").ToList(),
-                CheckInDate= DateOnly.FromDateTime(DateTime.Now),
+                VillaList = _villaService.GetAll(includeProperties: "VillaAmenity"),
+                CheckInDate = DateOnly.FromDateTime(DateTime.Now),
                 Nights = 1
             };
             return View(homeVM);
@@ -41,10 +41,10 @@ namespace WhiteLagoon.Web.Controllers
             //                      2023 - 06 - 29  2023 - 07 - 02
             //                      2023 - 06 - 30  2023 - 07 - 04
             //                      2023 - 06 - 29  2023 - 06 - 30
-            var villaList = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity").ToList();
-            var villaNumbersList = _unitOfWork.VillaNumber.GetAll().ToList();
-            var bookedVillas = _unitOfWork.Booking.GetAll(u => u.Status == SD.StatusApproved ||
-            u.Status == SD.StatusCheckedIn).ToList();
+
+            var villaList = _villaService.GetAll(includeProperties: "VillaAmenity");
+            var villaNumbersList = _villaNumberService.GetAll();
+            var bookedVillas = _bookingService.GetAllByStatus();
 
             foreach (var villa in villaList)
             {
@@ -60,7 +60,6 @@ namespace WhiteLagoon.Web.Controllers
             return PartialView("_VillaList", homeVM);
         }
 
-
         public IActionResult Privacy()
         {
             return View();
@@ -72,12 +71,10 @@ namespace WhiteLagoon.Web.Controllers
             return View();
         }
 
-
         [HttpPost]
         public IActionResult GeneratePPT(int id)
         {
-            var villa = _unitOfWork.Villa.GetAll(includeProperties: "VillaAmenity").FirstOrDefault(x => x.Id == id);
-
+            var villa = _villaService.GetAll(includeProperties: "VillaAmenity").FirstOrDefault(x => x.Id == id);
             string basePath = _webHostEnvironment.WebRootPath;
             string dataPath = basePath + @"/Exports/ExportVillaDetails.pptx";
 
