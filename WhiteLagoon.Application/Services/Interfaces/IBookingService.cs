@@ -1,4 +1,5 @@
-﻿using WhiteLagoon.Domain.Entities;
+﻿using Syncfusion.DocIO.DLS;
+using WhiteLagoon.Domain.Entities;
 
 namespace WhiteLagoon.Application.Services.Interfaces
 {
@@ -16,5 +17,6 @@ namespace WhiteLagoon.Application.Services.Interfaces
         List<Booking> GetAllByStatus();
         List<Booking> GetAll();
         List<int> AssignAvailableVillaNumberByVilla(int villaId, DateOnly checkInDate);
+        WordDocument GeneratePDF(int id, string basePath);
     }
 }
