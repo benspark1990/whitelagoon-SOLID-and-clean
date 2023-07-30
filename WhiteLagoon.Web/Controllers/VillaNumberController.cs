@@ -9,15 +9,15 @@ namespace WhiteLagoon.Web.Controllers
     public class VillaNumberController : Controller
     {
         private readonly IVillaService _villaService;
-        private readonly IVillaNumberService _villaNumberService;
+        private readonly IVillaNumberService _villaNumberNotSolidService;
         public VillaNumberController(IVillaNumberService villaNumberService, IVillaService villaService)
         {
-            _villaNumberService = villaNumberService;
+            _villaNumberNotSolidService = villaNumberService;
             _villaService = villaService;
         }
         public IActionResult Index(int villaId)
         {
-            List<VillaNumber> villaNumberList = _villaNumberService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
+            List<VillaNumber> villaNumberList = _villaNumberNotSolidService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
             return View(villaNumberList);
         }
 
@@ -39,11 +39,11 @@ namespace WhiteLagoon.Web.Controllers
         {
             //Remove some validations
             ModelState.Remove("VillaNumber.Villa");
-            bool isNumberUnique = _villaNumberService.GetByNumber(villaNumberVM.VillaNumber.Villa_Number).Count() == 0;
+            bool isNumberUnique = _villaNumberNotSolidService.GetByNumber(villaNumberVM.VillaNumber.Villa_Number).Count() == 0;
 
             if (ModelState.IsValid && isNumberUnique)
             {
-                _villaNumberService.Create(villaNumberVM.VillaNumber);
+                _villaNumberNotSolidService.Create(villaNumberVM.VillaNumber);
                 TempData["success"] = "Villa Number Successfully";
                 return RedirectToAction(nameof(Index));
             }
@@ -63,7 +63,7 @@ namespace WhiteLagoon.Web.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                VillaNumber = _villaNumberService.Get(villaId)
+                VillaNumber = _villaNumberNotSolidService.Get(villaId)
             };
             if (villaNumberVM.VillaNumber == null)
             {
@@ -77,7 +77,7 @@ namespace WhiteLagoon.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _villaNumberService.Update(villaNumberVM?.VillaNumber);
+                _villaNumberNotSolidService.Update(villaNumberVM?.VillaNumber);
 
                 TempData["success"] = "Villa Number Successfully";
                 return RedirectToAction(nameof(Index));
@@ -94,7 +94,7 @@ namespace WhiteLagoon.Web.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                VillaNumber = _villaNumberService.Get(villaId)
+                VillaNumber = _villaNumberNotSolidService.Get(villaId)
             };
             if (villaNumberVM.VillaNumber == null)
             {
@@ -106,10 +106,10 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult Delete(VillaNumberVM villaNumberVM)
         {
-            VillaNumber? objFromDb = _villaNumberService.Get(villaNumberVM?.VillaNumber?.Villa_Number ?? 0);
+            VillaNumber? objFromDb = _villaNumberNotSolidService.Get(villaNumberVM?.VillaNumber?.Villa_Number ?? 0);
             if (objFromDb != null)
             {
-                _villaNumberService.Delete(objFromDb);
+                _villaNumberNotSolidService.Delete(objFromDb);
 
                 TempData["success"] = "Villa Number Deleted Successfully";
                 return RedirectToAction(nameof(Index));
