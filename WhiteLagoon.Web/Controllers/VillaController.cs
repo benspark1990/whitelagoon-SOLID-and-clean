@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Application.Services.SOLID.O.Interfaces;
 using WhiteLagoon.Domain.Entities;
 
 namespace WhiteLagoon.Web.Controllers
 {
     public class VillaController : Controller
     {
-        private readonly Application.Services.SOLID.O.Interfaces.IVillaService _villaServiceSolid;
+        private readonly IVillaService _villaServiceNotSolid;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public VillaController(IWebHostEnvironment webHostEnvironment, Application.Services.SOLID.O.Interfaces.IVillaService villaServiceSolid)
+        public VillaController(IWebHostEnvironment webHostEnvironment, IVillaService villaServiceSolid)
         {
             _webHostEnvironment = webHostEnvironment;
-            _villaServiceSolid = villaServiceSolid;
+            _villaServiceNotSolid = villaServiceSolid;
         }
 
         public IActionResult Index()
         {
-            List<Villa> villasSolid = _villaServiceSolid.GetAll();
+            List<Villa> villasSolid = _villaServiceNotSolid.GetAll();
             return View(villasSolid);
         }
 
@@ -36,7 +35,7 @@ namespace WhiteLagoon.Web.Controllers
             }
             if (ModelState.IsValid)
             {
-                _villaServiceSolid.Create(villa, _webHostEnvironment.WebRootPath);
+                _villaServiceNotSolid.Create(villa, _webHostEnvironment.WebRootPath);
 
                 TempData["success"] = "Villa Created Successfully";
                 return RedirectToAction("Index");
@@ -46,7 +45,7 @@ namespace WhiteLagoon.Web.Controllers
 
         public IActionResult Update(int villaId)
         {
-            Villa? villa = _villaServiceSolid.GetById(villaId);
+            Villa? villa = _villaServiceNotSolid.GetById(villaId);
 
             if (villa is null)
             {
@@ -60,7 +59,7 @@ namespace WhiteLagoon.Web.Controllers
         {
             if (ModelState.IsValid && villa.Id > 0)
             {
-                _villaServiceSolid.Update(villa, _webHostEnvironment.WebRootPath);
+                _villaServiceNotSolid.Update(villa, _webHostEnvironment.WebRootPath);
 
                 TempData["success"] = "Villa Updated Successfully";
                 return RedirectToAction("Index");
@@ -70,7 +69,7 @@ namespace WhiteLagoon.Web.Controllers
 
         public IActionResult Delete(int villaId)
         {
-            Villa? villa = _villaServiceSolid.GetById(villaId);
+            Villa? villa = _villaServiceNotSolid.GetById(villaId);
 
             if (villa is null)
             {
@@ -83,7 +82,7 @@ namespace WhiteLagoon.Web.Controllers
         public IActionResult Delete(Villa obj)
         {
             var path = _webHostEnvironment.WebRootPath;
-            _villaServiceSolid.Delete(obj, path);
+            _villaServiceNotSolid.Delete(obj, path);
             return View(obj);
         }
     }
