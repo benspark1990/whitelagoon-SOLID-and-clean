@@ -8,16 +8,16 @@ namespace WhiteLagoon.Web.Controllers
 {
     public class AmenityController : Controller
     {
-        private readonly IAmenityService _amenityService;
+        private readonly IAmenityService _amenityNotSolidService;
         private readonly IVillaService _villaService;
-        public AmenityController(IVillaService villaService, IAmenityService amenityService)
+        public AmenityController(IVillaService villaService, IAmenityService amenityNotSolidService)
         {
             _villaService = villaService;
-            _amenityService = amenityService;
+            _amenityNotSolidService = amenityNotSolidService;
         }
         public IActionResult Index()
         {
-            List<Amenity> AmenityList = _amenityService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
+            List<Amenity> AmenityList = _amenityNotSolidService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
             return View(AmenityList);
         }
 
@@ -42,7 +42,7 @@ namespace WhiteLagoon.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                _amenityService.Create(AmenityVM?.Amenity);
+                _amenityNotSolidService.Create(AmenityVM?.Amenity);
 
                 TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
@@ -59,7 +59,7 @@ namespace WhiteLagoon.Web.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _amenityService.Get(amenityId)
+                Amenity = _amenityNotSolidService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -74,7 +74,7 @@ namespace WhiteLagoon.Web.Controllers
             ModelState.Remove("Amenity.Villa");
             if (ModelState.IsValid)
             {
-                _amenityService.Update(AmenityVM?.Amenity);
+                _amenityNotSolidService.Update(AmenityVM?.Amenity);
 
                 TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
@@ -86,12 +86,12 @@ namespace WhiteLagoon.Web.Controllers
         {
             AmenityVM AmenityVM = new()
             {
-                VillaList = _amenityService.GetAll().Select(u => new SelectListItem
+                VillaList = _amenityNotSolidService.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _amenityService.Get(amenityId)
+                Amenity = _amenityNotSolidService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -103,10 +103,10 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult Delete(AmenityVM AmenityVM)
         {
-            Amenity? objFromDb = _amenityService.Get(AmenityVM?.Amenity?.Id ?? 0);
+            Amenity? objFromDb = _amenityNotSolidService.Get(AmenityVM?.Amenity?.Id ?? 0);
             if (objFromDb != null)
             {
-                _amenityService.Delete(objFromDb);
+                _amenityNotSolidService.Delete(objFromDb);
 
                 TempData["success"] = "Amenity Deleted Successfully";
                 return RedirectToAction(nameof(Index));
