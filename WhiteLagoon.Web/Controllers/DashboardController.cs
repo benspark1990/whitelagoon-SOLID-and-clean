@@ -9,11 +9,11 @@ namespace WhiteLagoon.Web.Controllers
     [Authorize(Roles = SD.Role_Admin)]
     public class DashboardController : Controller
     {
-        private readonly IDashboardService _dashboadService;
+        private readonly IDashboardService _dashboadNotSolidService;
 
-        public DashboardController(IDashboardService dashboadService)
+        public DashboardController(IDashboardService dashboadNotSolidService)
         {
-            _dashboadService = dashboadService;
+            _dashboadNotSolidService = dashboadNotSolidService;
         }
 
         public IActionResult Index()
@@ -22,28 +22,28 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetTotalBookingsChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetBookingsChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetBookingsChartDataAsync();
 
             var data = ResultData(dashboardRadialBarChartVM);                            
             return Json(data);
         }
         public async Task<IActionResult> GetTotalRevenueChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRevenueChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetRevenueChartDataAsync();
 
             var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
         public async Task<IActionResult> GetRegisteredUserChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRegisteredUserChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetRegisteredUserChartDataAsync();
 
             var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
         public async Task<IActionResult> GetMemberAndBookingChartData()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _dashboadService.GetMemberAndBookingChartDataAsync();
+            DashboardLineChartVM dashboardLineChartVM = await _dashboadNotSolidService.GetMemberAndBookingChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
@@ -57,7 +57,7 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetCustomerBookingsPieChartData()
         {
-            DashboardPieChartVM dashboardPieChartVM = await _dashboadService.GetBookingPieChartDataAsync();
+            DashboardPieChartVM dashboardPieChartVM = await _dashboadNotSolidService.GetBookingPieChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
