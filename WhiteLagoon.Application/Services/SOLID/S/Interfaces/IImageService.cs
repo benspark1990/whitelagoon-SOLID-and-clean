@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WhiteLagoon.Domain.Entities;
 
-namespace WhiteLagoon.Application.Services.SOLID.O.Interfaces
+namespace WhiteLagoon.Application.Services.SOLID.S.Interfaces
 {
     public interface IImageService
     {

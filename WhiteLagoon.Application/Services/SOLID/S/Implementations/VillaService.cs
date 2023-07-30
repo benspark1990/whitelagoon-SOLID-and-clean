@@ -1,8 +1,8 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
-using WhiteLagoon.Application.Services.SOLID.O.Interfaces;
+using WhiteLagoon.Application.Services.SOLID.S.Interfaces;
 using WhiteLagoon.Domain.Entities;
 
-namespace WhiteLagoon.Application.Services.SOLID.O.Implementations
+namespace WhiteLagoon.Application.Services.SOLID.S.Implementations
 {
     public class VillaService : IVillaService
     {

@@ -5,8 +5,6 @@ using Syncfusion.Licensing;
 using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Implementations;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Application.Services.SOLID.O.Implementations;
-using WhiteLagoon.Application.Services.SOLID.O.Interfaces;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Infrastructure.Data;
 using WhiteLagoon.Infrastructure.Repository;
@@ -30,8 +28,14 @@ builder.Services.AddScoped<WhiteLagoon.Application.Services.Interfaces.IVillaNum
 
 #region SOLID
 
-builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.O.Interfaces.IVillaService, WhiteLagoon.Application.Services.SOLID.O.Implementations.VillaService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.S.Interfaces.IVillaService, WhiteLagoon.Application.Services.SOLID.S.Implementations.VillaService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.S.Interfaces.IImageService, WhiteLagoon.Application.Services.SOLID.S.Implementations.ImageService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.O.Interfaces.IVillaNumberService, WhiteLagoon.Application.Services.SOLID.O.Implementations.VillaNumberService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.O.Interfaces.IVillaNumberRepository, WhiteLagoon.Application.Services.SOLID.O.Implementations.VillaNumberRepository>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.L.Interfaces.IAmenityService, WhiteLagoon.Application.Services.SOLID.L.Implementations.AmenityService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.I.Interfaces.IDashboardService, WhiteLagoon.Application.Services.SOLID.I.Implementations.DashboardService>();
+builder.Services.AddScoped<WhiteLagoon.Application.Services.SOLID.D.Interfaces.IBookingService, WhiteLagoon.Application.Services.SOLID.D.Implementations.BookingService>();
+
 
 #endregion
 

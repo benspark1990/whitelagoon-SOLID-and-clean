@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WhiteLagoon.Application.Services.SOLID.O.Interfaces;
+using WhiteLagoon.Application.Services.SOLID.S.Interfaces;
 using WhiteLagoon.Domain.Entities;
 
 namespace WhiteLagoon.Web.Controllers.SOLID
