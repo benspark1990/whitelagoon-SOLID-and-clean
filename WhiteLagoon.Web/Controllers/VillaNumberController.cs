@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.Entities;
-using WhiteLagoon.Web.ViewModels;
+using WhiteLagoon.Service.Models.ViewModels;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -19,6 +19,7 @@ namespace WhiteLagoon.Web.Controllers
         {
             List<VillaNumber> villaNumberList = _villaNumberService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
             return View(villaNumberList);
+            
         }
 
         public IActionResult Create()

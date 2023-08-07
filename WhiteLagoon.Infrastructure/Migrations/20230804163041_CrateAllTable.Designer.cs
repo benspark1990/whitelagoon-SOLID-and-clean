@@ -12,8 +12,8 @@ using WhiteLagoon.Infrastructure.Data;
 namespace WhiteLagoon.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230621192454_addPaymentDate")]
-    partial class addPaymentDate
+    [Migration("20230804163041_CrateAllTable")]
+    partial class CrateAllTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -381,12 +381,17 @@ namespace WhiteLagoon.Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("VillaId")
                         .HasColumnType("int");
 
+                    b.Property<int>("VillaNumber")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("VillaId");
 
@@ -597,11 +602,19 @@ namespace WhiteLagoon.Infrastructure.Migrations
 
             modelBuilder.Entity("WhiteLagoon.Domain.Entities.Booking", b =>
                 {
+                    b.HasOne("WhiteLagoon.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WhiteLagoon.Domain.Entities.Villa", "Villa")
                         .WithMany()
                         .HasForeignKey("VillaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
 
                     b.Navigation("Villa");
                 });

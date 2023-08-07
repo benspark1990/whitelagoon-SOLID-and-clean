@@ -2,7 +2,7 @@
 using Syncfusion.Presentation;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Web.ViewModels;
+using WhiteLagoon.Service.Models.ViewModels;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -63,6 +63,7 @@ namespace WhiteLagoon.Web.Controllers
         public IActionResult Privacy()
         {
             return View();
+           
         }
 
         public IActionResult Error()
