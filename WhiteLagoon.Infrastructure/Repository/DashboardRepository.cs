@@ -1,14 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using WhiteLagoon.Application.Common.Interfaces;
-using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Infrastructure.Data;
+using WhiteLagoon.Shared.Enums;
 
 namespace WhiteLagoon.Infrastructure.Repository
 {
@@ -191,28 +185,30 @@ namespace WhiteLagoon.Infrastructure.Repository
 
             return dashboardLineChartVM;
         }
-        public async Task<DashboardPieChartVM> GetBookingPieChartDataAsync()
+
+        public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            DashboardPieChartVM dashboardPieChartVM = new DashboardPieChartVM();
+            int result = 0;
             try
             {
-                var newCustomerBookings = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
-                    .Where(g => g.Count() == 1).Select(g => g.Key).Count();
-
-                var returningCustomerBookings = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
-                    .Where(g => g.Count() > 1).Select(g => g.Key).Count();
-
-                dashboardPieChartVM.Labels = new string[] { "New Customers", "Returning Customers" };
-                dashboardPieChartVM.Series = new decimal[] { newCustomerBookings, returningCustomerBookings };
-
+                switch (customerType)
+                {
+                    case CustomerType.New:
+                        result = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                                .Where(g => g.Count() == 1).Select(g => g.Key).Count();
+                        break;
+                    case CustomerType.Returning:
+                        result = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                                .Where(g => g.Count() > 1).Select(g => g.Key).Count();
+                        break;
+                }
                 await Task.CompletedTask;
             }
             catch (Exception ex)
             {
                 throw;
             }
-
-            return dashboardPieChartVM;
+            return result;
         }
     }
 }

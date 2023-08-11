@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
+using WhiteLagoon.Shared.Enums;
+using WhiteLagoon.Web.Constants;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -57,13 +59,17 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetCustomerBookingsPieChartData()
         {
-            DashboardPieChartVM dashboardPieChartVM = await _dashboadService.GetBookingPieChartDataAsync();
+            // Retrieve your data 
+            var newCustomerBookings = _dashboadService.GetCustomerBookingsAsync(CustomerType.New);
+            var returningCustomerBookings = _dashboadService.GetCustomerBookingsAsync(CustomerType.Returning);
 
-            // Retrieve your data and format it as needed
+            await Task.WhenAll(new Task[2] { newCustomerBookings, returningCustomerBookings });
+           
+            // Format data as needed
             var data = new
             {
-                series = dashboardPieChartVM.Series,
-                labels = dashboardPieChartVM.Labels
+                series = new decimal[2] { newCustomerBookings.Result, returningCustomerBookings.Result },
+                labels = new string[2] { DashboardConstants.NewCustomer, DashboardConstants.ReturningCustomer }
             };
 
             // Manually serialize the data to JSON

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WhiteLagoon.Domain.SharedModels;
+﻿using WhiteLagoon.Domain.SharedModels;
+using WhiteLagoon.Shared.Enums;
 
 namespace WhiteLagoon.Application.Services.Interfaces
 {
@@ -13,6 +9,6 @@ namespace WhiteLagoon.Application.Services.Interfaces
         public Task<RadialBarChartVM> GetRevenueChartDataAsync();
         public Task<RadialBarChartVM> GetRegisteredUserChartDataAsync();
         public Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync();
-        public Task<DashboardPieChartVM> GetBookingPieChartDataAsync();
+        public Task<int> GetCustomerBookingsAsync(CustomerType customerType);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
+using WhiteLagoon.Shared.Enums;
 
 namespace WhiteLagoon.Application.Services.Implementations
 {
@@ -41,11 +42,11 @@ namespace WhiteLagoon.Application.Services.Implementations
             return dashboardLineChartVM;
         }
 
-        public async Task<DashboardPieChartVM> GetBookingPieChartDataAsync()
+        public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            DashboardPieChartVM dashboardPieChartVM = await _unitOfWork.Dashboard.GetBookingPieChartDataAsync();
-        
-            return dashboardPieChartVM;
+            int bookingCount = await _unitOfWork.Dashboard.GetCustomerBookingsAsync(customerType);
+
+            return bookingCount;
         }
     }
 }
