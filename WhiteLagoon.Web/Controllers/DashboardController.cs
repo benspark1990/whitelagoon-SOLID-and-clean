@@ -59,7 +59,7 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetCustomerBookingsPieChartData()
         {
-            // Retrieve your data 
+            // Retrieve data 
             var newCustomerBookings = _dashboadService.GetCustomerBookingsAsync(CustomerType.New);
             var returningCustomerBookings = _dashboadService.GetCustomerBookingsAsync(CustomerType.Returning);
 
