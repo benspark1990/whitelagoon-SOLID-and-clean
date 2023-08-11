@@ -1,23 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WhiteLagoon.Application.Services.Interfaces;
+using WhiteLagoon.Application.Services.SOLID.L.Interfaces;
 using WhiteLagoon.Domain.Entities;
 using WhiteLagoon.Web.ViewModels;
 
-namespace WhiteLagoon.Web.Controllers
+namespace WhiteLagoon.Web.Controllers.SOLID
 {
-    public class AmenityController : Controller
+    public class AmenitySolidController : Controller
     {
-        private readonly IAmenityService _amenityNotSolidService;
+        private readonly Application.Services.SOLID.L.Interfaces.IAmenityService _amenityCorrectSolidService;
         private readonly IVillaService _villaService;
-        public AmenityController(IVillaService villaService, IAmenityService amenityNotSolidService)
+        public AmenitySolidController(IVillaService villaService, Application.Services.SOLID.L.Interfaces.IAmenityService amenityCorrectSolidService)
         {
             _villaService = villaService;
-            _amenityNotSolidService = amenityNotSolidService;
+            _amenityCorrectSolidService = amenityCorrectSolidService;
         }
         public IActionResult Index()
         {
-            List<Amenity> AmenityList = _amenityNotSolidService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
+            List<Amenity> AmenityList = _amenityCorrectSolidService.GetAll(includeProperties: "Villa").OrderBy(u => u.Villa.Name).ToList();
             return View(AmenityList);
         }
 
@@ -42,7 +43,7 @@ namespace WhiteLagoon.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                _amenityNotSolidService.Create(AmenityVM?.Amenity);
+                _amenityCorrectSolidService.Create(AmenityVM?.Amenity);
 
                 TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
@@ -59,7 +60,7 @@ namespace WhiteLagoon.Web.Controllers
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _amenityNotSolidService.Get(amenityId)
+                Amenity = _amenityCorrectSolidService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -74,7 +75,7 @@ namespace WhiteLagoon.Web.Controllers
             ModelState.Remove("Amenity.Villa");
             if (ModelState.IsValid)
             {
-                _amenityNotSolidService.Update(AmenityVM?.Amenity);
+                _amenityCorrectSolidService.Update(AmenityVM?.Amenity);
 
                 TempData["success"] = "Amenity Successfully";
                 return RedirectToAction(nameof(Index));
@@ -86,12 +87,12 @@ namespace WhiteLagoon.Web.Controllers
         {
             AmenityVM AmenityVM = new()
             {
-                VillaList = _amenityNotSolidService.GetAll().Select(u => new SelectListItem
+                VillaList = _amenityCorrectSolidService.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 }),
-                Amenity = _amenityNotSolidService.Get(amenityId)
+                Amenity = _amenityCorrectSolidService.Get(amenityId)
             };
             if (AmenityVM.Amenity == null)
             {
@@ -103,10 +104,10 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult Delete(AmenityVM AmenityVM)
         {
-            Amenity? objFromDb = _amenityNotSolidService.Get(AmenityVM?.Amenity?.Id ?? 0);
+            Amenity? objFromDb = _amenityCorrectSolidService.Get(AmenityVM?.Amenity?.Id ?? 0);
             if (objFromDb != null)
             {
-                _amenityNotSolidService.Delete(objFromDb);
+                _amenityCorrectSolidService.Delete(objFromDb);
 
                 TempData["success"] = "Amenity Deleted Successfully";
                 return RedirectToAction(nameof(Index));

@@ -6,25 +6,26 @@ using Syncfusion.Pdf;
 using System.Security.Claims;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
+using WhiteLagoon.Application.Services.SOLID.D.Interfaces;
 using WhiteLagoon.Domain.Entities;
 
-namespace WhiteLagoon.Web.Controllers
+namespace WhiteLagoon.Web.Controllers.SOLID
 {
-    public class BookingController : Controller
+    public class BookingSolidController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly List<string> _bookedStatus = new List<string> { "Approved", "CheckedIn" };
-        private readonly IBookingService _bookingNotSolidService;
+        private readonly Application.Services.SOLID.D.Interfaces.IBookingService _bookingCorrectSolidService;
         private readonly IVillaService _villaService;
         private readonly IVillaNumberService _villaNumberService;
-        public BookingController(
+        public BookingSolidController(
             IWebHostEnvironment webHostEnvironment,
-            IBookingService bookingNotSolidService,
+            Application.Services.SOLID.D.Interfaces.IBookingService bookingCorrectSolidService,
             IVillaService villaService,
             IVillaNumberService villaNumberService)
         {
             _webHostEnvironment = webHostEnvironment;
-            _bookingNotSolidService = bookingNotSolidService;
+            _bookingCorrectSolidService = bookingCorrectSolidService;
             _villaService = villaService;
             _villaNumberService = villaNumberService;
         }
@@ -36,9 +37,9 @@ namespace WhiteLagoon.Web.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-            
-            var booking = _bookingNotSolidService.FinalizeBookingByUser(villaId, checkInDate, nights, userId);
-           
+
+            var booking = _bookingCorrectSolidService.FinalizeBookingByUser(villaId, checkInDate, nights, userId);
+
             return View(booking);
         }
 
@@ -46,7 +47,7 @@ namespace WhiteLagoon.Web.Controllers
         [HttpPost]
         public IActionResult FinalizeBooking(Booking booking)
         {
-            _bookingNotSolidService.FinalizeBooking(booking);          
+            _bookingCorrectSolidService.FinalizeBooking(booking);
             var villa = _villaService.GetById(booking.VillaId);
 
             //it is a regular customer account and we need to capture payment
@@ -82,7 +83,7 @@ namespace WhiteLagoon.Web.Controllers
 
 
             var villaNumbersList = _villaNumberService.GetAll();
-            var bookedVillas = _bookingNotSolidService.GetAllByStatus();
+            var bookedVillas = _bookingCorrectSolidService.GetAllByStatus();
 
             int roomsAvailable = SD.VillaRoomsAvailable_Count(villa, villaNumbersList,
                 booking.CheckInDate, booking.Nights, bookedVillas);
@@ -101,16 +102,16 @@ namespace WhiteLagoon.Web.Controllers
             var service = new SessionService();
 
             Session session = service.Create(options);
-            _bookingNotSolidService.UpdateStripePaymentID(booking.Id, session.Id, session.PaymentIntentId);
+            _bookingCorrectSolidService.UpdateStripePaymentID(booking.Id, session.Id, session.PaymentIntentId);
             Response.Headers.Add("Location", session.Url);
-           
+
             return new StatusCodeResult(303);
         }
 
         [Authorize]
         public IActionResult BookingConfirmation(int bookingId)
         {
-            var booking = _bookingNotSolidService.GetBookingById(bookingId);
+            var booking = _bookingCorrectSolidService.GetBookingById(bookingId);
             if (booking.Status == SD.StatusPending)
             {
                 //this is a pending order
@@ -119,7 +120,7 @@ namespace WhiteLagoon.Web.Controllers
 
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
-                    _bookingNotSolidService.BookingConfirmation(bookingId, session.Id, session.PaymentIntentId);
+                    _bookingCorrectSolidService.BookingConfirmation(bookingId, session.Id, session.PaymentIntentId);
                 }
             }
 
@@ -136,7 +137,7 @@ namespace WhiteLagoon.Web.Controllers
         [Authorize]
         public IActionResult BookingDetails(int bookingId)
         {
-            var bookingFromDb = _bookingNotSolidService.BookingDetails(bookingId);
+            var bookingFromDb = _bookingCorrectSolidService.BookingDetails(bookingId);
             return View(bookingFromDb);
         }
 
@@ -145,7 +146,7 @@ namespace WhiteLagoon.Web.Controllers
         [Authorize(Roles = SD.Role_Admin)]
         public IActionResult CheckIn(Booking booking)
         {
-            _bookingNotSolidService.CheckIn(booking);
+            _bookingCorrectSolidService.CheckIn(booking);
 
             TempData["Success"] = "Booking Updated Successfully.";
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -155,7 +156,7 @@ namespace WhiteLagoon.Web.Controllers
         [Authorize(Roles = SD.Role_Admin)]
         public IActionResult CheckOut(Booking booking)
         {
-            _bookingNotSolidService.CheckOut(booking);
+            _bookingCorrectSolidService.CheckOut(booking);
 
             TempData["Success"] = "Booking Updated Successfully.";
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -165,7 +166,7 @@ namespace WhiteLagoon.Web.Controllers
         [Authorize(Roles = SD.Role_Admin)]
         public IActionResult CancelBooking(Booking booking)
         {
-            _bookingNotSolidService.CancelBooking(booking);
+            _bookingCorrectSolidService.CancelBooking(booking);
 
             TempData["Success"] = "Booking Updated Successfully.";
             return RedirectToAction(nameof(BookingDetails), new { bookingId = booking.Id });
@@ -175,8 +176,8 @@ namespace WhiteLagoon.Web.Controllers
         [Authorize(Roles = SD.Role_Admin)]
         public IActionResult GeneratePDF(int id)
         {
-            var doc = _bookingNotSolidService.GeneratePDF(id, _webHostEnvironment.WebRootPath);
-           
+            var doc = _bookingCorrectSolidService.GeneratePDF(id, _webHostEnvironment.WebRootPath);
+
             using DocIORenderer render = new();
             //Converts Word document into PDF document
             PdfDocument pdfDocument = render.ConvertToPDF(doc);
@@ -199,14 +200,14 @@ namespace WhiteLagoon.Web.Controllers
 
             if (User.IsInRole(SD.Role_Admin))
             {
-                objBookings = _bookingNotSolidService.GetAll();
+                objBookings = _bookingCorrectSolidService.GetAll();
             }
             else
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity;
                 var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                objBookings = _bookingNotSolidService.GetAll();
+                objBookings = _bookingCorrectSolidService.GetAll();
             }
 
             if (!string.IsNullOrWhiteSpace(status))

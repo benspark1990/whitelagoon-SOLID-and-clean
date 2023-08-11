@@ -1,19 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using WhiteLagoon.Application.Common.Utility;
-using WhiteLagoon.Application.Services.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using WhiteLagoon.Application.Services.SOLID.I.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
 
-namespace WhiteLagoon.Web.Controllers
+namespace WhiteLagoon.Web.Controllers.SOLID
 {
-    [Authorize(Roles = SD.Role_Admin)]
-    public class DashboardController : Controller
+    public class DashboardSolidController : Controller
     {
-        private readonly IDashboardService _dashboadNotSolidService;
+        private readonly IDashboardService _dashboadCorrectSolidService;
 
-        public DashboardController(IDashboardService dashboadNotSolidService)
+        public DashboardSolidController(IDashboardService dashboadCorrectSolidService)
         {
-            _dashboadNotSolidService = dashboadNotSolidService;
+            _dashboadCorrectSolidService = dashboadCorrectSolidService;
         }
 
         public IActionResult Index()
@@ -22,28 +19,28 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetTotalBookingsChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetBookingsChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadCorrectSolidService.GetBookingsChartDataAsync();
 
-            var data = ResultData(dashboardRadialBarChartVM);                            
+            var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
         public async Task<IActionResult> GetTotalRevenueChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetRevenueChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadCorrectSolidService.GetRevenueChartDataAsync();
 
             var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
         public async Task<IActionResult> GetRegisteredUserChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadNotSolidService.GetRegisteredUserChartDataAsync();
+            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadCorrectSolidService.GetRegisteredUserChartDataAsync();
 
             var data = ResultData(dashboardRadialBarChartVM);
             return Json(data);
         }
         public async Task<IActionResult> GetMemberAndBookingChartData()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _dashboadNotSolidService.GetMemberAndBookingChartDataAsync();
+            DashboardLineChartVM dashboardLineChartVM = await _dashboadCorrectSolidService.GetMemberAndBookingChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
@@ -57,7 +54,7 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetCustomerBookingsPieChartData()
         {
-            DashboardPieChartVM dashboardPieChartVM = await _dashboadNotSolidService.GetBookingPieChartDataAsync();
+            DashboardPieChartVM dashboardPieChartVM = await _dashboadCorrectSolidService.GetBookingPieChartDataAsync();
 
             // Retrieve your data and format it as needed
             var data = new
