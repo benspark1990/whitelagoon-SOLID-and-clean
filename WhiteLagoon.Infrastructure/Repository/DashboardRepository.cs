@@ -188,17 +188,17 @@ namespace WhiteLagoon.Infrastructure.Repository
 
         public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            int result = 0;
+            int bookingsCount = 0;
             try
             {
                 switch (customerType)
                 {
                     case CustomerType.New:
-                        result = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                        bookingsCount = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
                                 .Where(g => g.Count() == 1).Select(g => g.Key).Count();
                         break;
                     case CustomerType.Returning:
-                        result = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                        bookingsCount = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
                                 .Where(g => g.Count() > 1).Select(g => g.Key).Count();
                         break;
                 }
@@ -208,7 +208,7 @@ namespace WhiteLagoon.Infrastructure.Repository
             {
                 throw;
             }
-            return result;
+            return bookingsCount;
         }
     }
 }
