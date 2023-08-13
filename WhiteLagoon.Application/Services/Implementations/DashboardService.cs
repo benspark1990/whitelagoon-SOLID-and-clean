@@ -1,7 +1,7 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Shared.Enums;
+using WhiteLagoon.Application.Enums;
 
 namespace WhiteLagoon.Application.Services.Implementations
 {
@@ -44,9 +44,9 @@ namespace WhiteLagoon.Application.Services.Implementations
 
         public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            int bookingCount = await _unitOfWork.Dashboard.GetCustomerBookingsAsync(customerType);
+            int bookingsCount = await _unitOfWork.Dashboard.GetCustomerBookingsAsync(customerType);
 
-            return bookingCount;
+            return bookingsCount;
         }
     }
 }

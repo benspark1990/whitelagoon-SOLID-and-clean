@@ -1,5 +1,5 @@
 ﻿using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Shared.Enums;
+using WhiteLagoon.Application.Enums;
 
 namespace WhiteLagoon.Application.Services.Interfaces
 {

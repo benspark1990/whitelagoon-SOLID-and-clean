@@ -2,7 +2,7 @@
 using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Infrastructure.Data;
-using WhiteLagoon.Shared.Enums;
+using WhiteLagoon.Application.Enums;
 
 namespace WhiteLagoon.Infrastructure.Repository
 {

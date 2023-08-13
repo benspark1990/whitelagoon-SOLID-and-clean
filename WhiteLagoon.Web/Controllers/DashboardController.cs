@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Shared.Enums;
+using WhiteLagoon.Application.Enums;
 using WhiteLagoon.Web.Constants;
 
 namespace WhiteLagoon.Web.Controllers

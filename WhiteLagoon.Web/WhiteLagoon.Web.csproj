@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WhiteLagoon.Infrastructure\WhiteLagoon.Infrastructure.csproj" />
-    <ProjectReference Include="..\WhiteLagoon.Shared\WhiteLagoon.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

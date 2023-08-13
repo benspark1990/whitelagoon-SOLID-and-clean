@@ -23,7 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WhiteLagoon.Application\WhiteLagoon.Application.csproj" />
     <ProjectReference Include="..\WhiteLagoon.Domain\WhiteLagoon.Domain.csproj" />
-    <ProjectReference Include="..\WhiteLagoon.Shared\WhiteLagoon.Shared.csproj" />
   </ItemGroup>
 
 </Project>
