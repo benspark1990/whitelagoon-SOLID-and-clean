@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WhiteLagoon.Application.Enums
+namespace WhiteLagoon.Application.Common.Enums
 {
     public enum CustomerType
     {

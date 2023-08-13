@@ -1,7 +1,8 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Application.Enums;
+using WhiteLagoon.Application.Common.Enums;
+using WhiteLagoon.Application.Common.Dtos;
 
 namespace WhiteLagoon.Application.Services.Implementations
 {
@@ -14,25 +15,25 @@ namespace WhiteLagoon.Application.Services.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RadialBarChartVM> GetBookingsChartDataAsync()
+        public async Task<RadialBarChartDto> GetBookingsChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
-        public async Task<RadialBarChartVM> GetRevenueChartDataAsync()
+        public async Task<RadialBarChartDto> GetRevenueChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetRevenueChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
-        public async Task<RadialBarChartVM> GetRegisteredUserChartDataAsync()
+        public async Task<RadialBarChartDto> GetRegisteredUserChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetRegisteredUserChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetRegisteredUserChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
         public async Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync()

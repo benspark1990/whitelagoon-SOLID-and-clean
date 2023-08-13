@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
 using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Application.Enums;
 using WhiteLagoon.Web.Constants;
+using WhiteLagoon.Application.Common.Enums;
+using WhiteLagoon.Application.Common.Dtos;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -24,23 +25,23 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetTotalBookingsChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetBookingsChartDataAsync();
+            RadialBarChartDto chartData = await _dashboadService.GetBookingsChartDataAsync();
 
-            var data = ResultData(dashboardRadialBarChartVM);                            
+            var data = ResultData(chartData);                            
             return Json(data);
         }
         public async Task<IActionResult> GetTotalRevenueChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRevenueChartDataAsync();
+            RadialBarChartDto chartData = await _dashboadService.GetRevenueChartDataAsync();
 
-            var data = ResultData(dashboardRadialBarChartVM);
+            var data = ResultData(chartData);
             return Json(data);
         }
         public async Task<IActionResult> GetRegisteredUserChartData()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _dashboadService.GetRegisteredUserChartDataAsync();
+            RadialBarChartDto chartData = await _dashboadService.GetRegisteredUserChartDataAsync();
 
-            var data = ResultData(dashboardRadialBarChartVM);
+            var data = ResultData(chartData);
             return Json(data);
         }
         public async Task<IActionResult> GetMemberAndBookingChartData()
@@ -75,15 +76,25 @@ namespace WhiteLagoon.Web.Controllers
             // Manually serialize the data to JSON
             return Json(data);
         }
-        private static object ResultData(RadialBarChartVM dashboardRadialBarChartVM)
+        private static object ResultData(RadialBarChartDto chartData)
         {
+            double increaseDecreaseRatio = 100;
+            bool hasIncreased = true;
+
+            // Considering any non-zero count in current month as 100% increase.
+            if (chartData.PreviousMonthTotal != 0)
+            {
+                increaseDecreaseRatio = Math.Round((chartData.CurrentMonthTotal - chartData.PreviousMonthTotal) / chartData.PreviousMonthTotal * 100, 2);
+                hasIncreased = chartData.CurrentMonthTotal > chartData.PreviousMonthTotal;
+            }
+
             return new
             {
-                series = dashboardRadialBarChartVM.Series, //new int[] { 30 },
-                totalCount = dashboardRadialBarChartVM.TotalCount,
-                increaseDecreaseRatio = dashboardRadialBarChartVM.IncreaseDecreaseRatio,
-                hasRatioIncreased = dashboardRadialBarChartVM.HasRatioIncreased,
-                increaseDecreaseAmount = dashboardRadialBarChartVM.IncreaseDecreaseAmount
+                series = new double[] { increaseDecreaseRatio },
+                totalCount = chartData.Total,
+                increaseDecreaseRatio = increaseDecreaseRatio,
+                hasRatioIncreased = hasIncreased,
+                increaseDecreaseAmount = chartData.CurrentMonthTotal
             };
         }
     }
