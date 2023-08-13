@@ -1,5 +1,4 @@
-﻿using WhiteLagoon.Domain.SharedModels;
-using WhiteLagoon.Application.Common.Enums;
+﻿using WhiteLagoon.Application.Common.Enums;
 using WhiteLagoon.Application.Common.Dtos;
 
 namespace WhiteLagoon.Application.Services.Interfaces
@@ -9,7 +8,7 @@ namespace WhiteLagoon.Application.Services.Interfaces
         public Task<RadialBarChartDto> GetBookingsChartDataAsync();
         public Task<RadialBarChartDto> GetRevenueChartDataAsync();
         public Task<RadialBarChartDto> GetRegisteredUserChartDataAsync();
-        public Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync();
+        public Task<DashboardLineChartDto> GetMemberAndBookingChartDataAsync();
         public Task<int> GetCustomerBookingsAsync(CustomerType customerType);
     }
 }

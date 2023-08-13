@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WhiteLagoon.Application.Common.Interfaces;
-using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Infrastructure.Data;
 using WhiteLagoon.Application.Common.Enums;
 using WhiteLagoon.Application.Common.Dtos;
@@ -52,12 +51,10 @@ namespace WhiteLagoon.Infrastructure.Repository
             var countByPreviousMonth = _db.Users.Count(r => r.CreatedAt >= previousMonthStartDate && r.CreatedAt < currentMonthStartDate);
 
             return new RadialBarChartDto(totalCount, countByCurrentMonth, countByPreviousMonth);
-
         }
 
-        public async Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync()
+        public async Task<DashboardLineChartDto> GetMemberAndBookingChartDataAsync()
         {
-            DashboardLineChartVM dashboardLineChartVM = new DashboardLineChartVM();
             try
             {
                 DateTime currentDate = DateTime.Now;
@@ -119,24 +116,14 @@ namespace WhiteLagoon.Infrastructure.Repository
                 var newCustomerData = mergedData.Select(d => d.NewCustomerCount).ToList();
                 var categories = mergedData.Select(d => d.DateTime.Date.ToString("MM/dd/yyyy")).ToList();
 
-
-                List<ChartData> chartDataList = new List<ChartData>
-                {
-                    new ChartData { Name = "New Memebers", Data = newCustomerData.ToArray() },
-                    new ChartData { Name = "New Bookings", Data = newBookingData.ToArray() }
-                };
-
-                dashboardLineChartVM.ChartData = chartDataList;
-                dashboardLineChartVM.Categories = categories.ToArray();
-
                 await Task.CompletedTask;
+
+                return new DashboardLineChartDto(newCustomerData, newBookingData, categories);
             }
             catch (Exception ex)
             {
                 throw;
             }
-
-            return dashboardLineChartVM;
         }
 
         public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)

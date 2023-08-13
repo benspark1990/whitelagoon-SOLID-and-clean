@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using WhiteLagoon.Application.Common.Utility;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Web.Constants;
 using WhiteLagoon.Application.Common.Enums;
 using WhiteLagoon.Application.Common.Dtos;
+using WhiteLagoon.Web.ViewModels;
 
 namespace WhiteLagoon.Web.Controllers
 {
@@ -46,13 +46,19 @@ namespace WhiteLagoon.Web.Controllers
         }
         public async Task<IActionResult> GetMemberAndBookingChartData()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _dashboadService.GetMemberAndBookingChartDataAsync();
+            DashboardLineChartDto dashboardLineChartDto = await _dashboadService.GetMemberAndBookingChartDataAsync();
 
             // Retrieve your data and format it as needed
+            List<DashboardLineChartData> chartDataList = new List<DashboardLineChartData>
+            {
+                new DashboardLineChartData { Name = DashboardConstants.NewMembers, Data = dashboardLineChartDto.NewMembers },
+                new DashboardLineChartData { Name = DashboardConstants.NewBookings, Data = dashboardLineChartDto.NewBookings }
+            };
+
             var data = new
             {
-                series = dashboardLineChartVM.ChartData,
-                categories = dashboardLineChartVM.Categories
+                series = chartDataList,
+                categories = dashboardLineChartDto.Categories
             };
 
             // Manually serialize the data to JSON
@@ -99,3 +105,4 @@ namespace WhiteLagoon.Web.Controllers
         }
     }
 }
+

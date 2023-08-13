@@ -1,6 +1,5 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Application.Common.Enums;
 using WhiteLagoon.Application.Common.Dtos;
 
@@ -36,11 +35,11 @@ namespace WhiteLagoon.Application.Services.Implementations
             return chartData;
         }
 
-        public async Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync()
+        public async Task<DashboardLineChartDto> GetMemberAndBookingChartDataAsync()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _unitOfWork.Dashboard.GetMemberAndBookingChartDataAsync();
-        
-            return dashboardLineChartVM;
+            DashboardLineChartDto dashboardLineChart = await _unitOfWork.Dashboard.GetMemberAndBookingChartDataAsync();
+
+            return dashboardLineChart;
         }
 
         public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
