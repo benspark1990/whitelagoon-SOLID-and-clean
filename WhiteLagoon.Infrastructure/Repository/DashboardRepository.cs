@@ -1,14 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using WhiteLagoon.Application.Common.Interfaces;
-using WhiteLagoon.Domain.Entities;
-using WhiteLagoon.Domain.SharedModels;
 using WhiteLagoon.Infrastructure.Data;
+using WhiteLagoon.Application.Common.Enums;
+using WhiteLagoon.Application.Common.Dtos;
 
 namespace WhiteLagoon.Infrastructure.Repository
 {
@@ -20,9 +14,8 @@ namespace WhiteLagoon.Infrastructure.Repository
             _db = db;
         }
 
-        public async Task<RadialBarChartVM> GetBookingsChartDataAsync()
+        public async Task<RadialBarChartDto> GetBookingsChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = new();
             int totalBooking = await _db.Bookings.CountAsync();
 
             DateTime previousMonthStartDate = new(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
@@ -31,86 +24,37 @@ namespace WhiteLagoon.Infrastructure.Repository
             var countByCurrentMonth = _db.Bookings.Count(r => r.BookingDate >= currentMonthStartDate && r.BookingDate < DateTime.Now);
             var countByPreviousMonth = _db.Bookings.Count(r => r.BookingDate >= previousMonthStartDate && r.BookingDate < currentMonthStartDate);
 
-            decimal increaseDecreaseRatio = 100;
-            bool hasIncreased = true;
-
-            // Considering any non-zero count in current month as 100% increase.
-            if (countByPreviousMonth != 0)
-            {
-                increaseDecreaseRatio = Math.Round(((decimal)countByCurrentMonth - countByPreviousMonth) / countByPreviousMonth * 100, 2);
-                hasIncreased = countByCurrentMonth > countByPreviousMonth;
-            }
-            dashboardRadialBarChartVM.IncreaseDecreaseAmount = (decimal)countByCurrentMonth;
-            dashboardRadialBarChartVM.TotalCount = totalBooking;
-            dashboardRadialBarChartVM.IncreaseDecreaseRatio = increaseDecreaseRatio;
-            dashboardRadialBarChartVM.HasRatioIncreased = hasIncreased;
-            dashboardRadialBarChartVM.Series = new decimal[] { increaseDecreaseRatio };
-            return dashboardRadialBarChartVM;
+            return new RadialBarChartDto(totalBooking, countByCurrentMonth, countByPreviousMonth);
         }
 
-        public async Task<RadialBarChartVM> GetRevenueChartDataAsync()
+        public async Task<RadialBarChartDto> GetRevenueChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = new ();
-                decimal totalCost = Convert.ToDecimal(await _db.Bookings.SumAsync(x => x.TotalCost));
+            double totalCost = await _db.Bookings.SumAsync(x => x.TotalCost);
 
-                
-                DateTime previousMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
-                DateTime currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime previousMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
+            DateTime currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
-                var sumByCurrentMonth = _db.Bookings.Where((r => r.BookingDate >= currentMonthStartDate && r.BookingDate < DateTime.Now)).Sum(x => x.TotalCost);
-                var sumByPreviousMonth = _db.Bookings.Where(r => r.BookingDate >= previousMonthStartDate && r.BookingDate < currentMonthStartDate).Sum(x => x.TotalCost);
-
-                decimal increaseDecreaseRatio = 100;
-                bool isIncrease = true;
-                // Considering any non-zero count in current month as 100% increase.
-
-                if (sumByPreviousMonth != 0)
-                {
-                    increaseDecreaseRatio = Convert.ToDecimal(Math.Round(((double)sumByCurrentMonth - sumByPreviousMonth) / sumByPreviousMonth * 100, 2));
-                    isIncrease = sumByCurrentMonth > sumByPreviousMonth;
-                }
-
-                dashboardRadialBarChartVM.TotalCount = totalCost;
-                dashboardRadialBarChartVM.IncreaseDecreaseAmount = (decimal)sumByCurrentMonth;
-                dashboardRadialBarChartVM.IncreaseDecreaseRatio = increaseDecreaseRatio;
-                dashboardRadialBarChartVM.HasRatioIncreased = isIncrease;
-                dashboardRadialBarChartVM.Series = new decimal[] { increaseDecreaseRatio };
-            return dashboardRadialBarChartVM;
+            var sumByCurrentMonth = _db.Bookings.Where((r => r.BookingDate >= currentMonthStartDate && r.BookingDate < DateTime.Now)).Sum(x => x.TotalCost);
+            var sumByPreviousMonth = _db.Bookings.Where(r => r.BookingDate >= previousMonthStartDate && r.BookingDate < currentMonthStartDate).Sum(x => x.TotalCost);
+            
+            return new RadialBarChartDto(totalCost, sumByCurrentMonth, sumByPreviousMonth);
         }
 
-        public async Task<RadialBarChartVM> GetRegisteredUserChartDataAsync()
+        public async Task<RadialBarChartDto> GetRegisteredUserChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM =    new();
-                int totalCount = await _db.Users.CountAsync();
-
+            int totalCount = await _db.Users.CountAsync();
                
-                DateTime previousMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
-                DateTime currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime previousMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
+            DateTime currentMonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
-                var countByCurrentMonth = _db.Users.Count(r => r.CreatedAt >= currentMonthStartDate && r.CreatedAt < DateTime.Now);
-                var countByPreviousMonth = _db.Users.Count(r => r.CreatedAt >= previousMonthStartDate && r.CreatedAt < currentMonthStartDate);
+            var countByCurrentMonth = _db.Users.Count(r => r.CreatedAt >= currentMonthStartDate && r.CreatedAt < DateTime.Now);
+            var countByPreviousMonth = _db.Users.Count(r => r.CreatedAt >= previousMonthStartDate && r.CreatedAt < currentMonthStartDate);
 
-                decimal increaseDecreaseRatio = 100;
-                bool isIncrease = true;
-                // Considering any non-zero count in current month as 100% increase.
-
-                if (countByPreviousMonth != 0)
-                {
-                    increaseDecreaseRatio = Math.Round(((decimal)countByCurrentMonth - countByPreviousMonth) / countByPreviousMonth * 100, 2);
-                    isIncrease = countByCurrentMonth > countByPreviousMonth;
-                }
-                dashboardRadialBarChartVM.IncreaseDecreaseAmount = (decimal)countByCurrentMonth;
-                dashboardRadialBarChartVM.TotalCount = totalCount;
-                dashboardRadialBarChartVM.IncreaseDecreaseRatio = increaseDecreaseRatio;
-                dashboardRadialBarChartVM.HasRatioIncreased = isIncrease;
-                dashboardRadialBarChartVM.Series = new decimal[] { increaseDecreaseRatio };
-
-            return dashboardRadialBarChartVM;
+            return new RadialBarChartDto(totalCount, countByCurrentMonth, countByPreviousMonth);
         }
 
-        public async Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync()
+        public async Task<DashboardLineChartDto> GetMemberAndBookingChartDataAsync()
         {
-            DashboardLineChartVM dashboardLineChartVM = new DashboardLineChartVM();
             try
             {
                 DateTime currentDate = DateTime.Now;
@@ -172,47 +116,39 @@ namespace WhiteLagoon.Infrastructure.Repository
                 var newCustomerData = mergedData.Select(d => d.NewCustomerCount).ToList();
                 var categories = mergedData.Select(d => d.DateTime.Date.ToString("MM/dd/yyyy")).ToList();
 
-
-                List<ChartData> chartDataList = new List<ChartData>
-                {
-                    new ChartData { Name = "New Memebers", Data = newCustomerData.ToArray() },
-                    new ChartData { Name = "New Bookings", Data = newBookingData.ToArray() }
-                };
-
-                dashboardLineChartVM.ChartData = chartDataList;
-                dashboardLineChartVM.Categories = categories.ToArray();
-
                 await Task.CompletedTask;
+
+                return new DashboardLineChartDto(newCustomerData, newBookingData, categories);
             }
             catch (Exception ex)
             {
                 throw;
             }
-
-            return dashboardLineChartVM;
         }
-        public async Task<DashboardPieChartVM> GetBookingPieChartDataAsync()
+
+        public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            DashboardPieChartVM dashboardPieChartVM = new DashboardPieChartVM();
+            int bookingsCount = 0;
             try
             {
-                var newCustomerBookings = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
-                    .Where(g => g.Count() == 1).Select(g => g.Key).Count();
-
-                var returningCustomerBookings = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
-                    .Where(g => g.Count() > 1).Select(g => g.Key).Count();
-
-                dashboardPieChartVM.Labels = new string[] { "New Customers", "Returning Customers" };
-                dashboardPieChartVM.Series = new decimal[] { newCustomerBookings, returningCustomerBookings };
-
+                switch (customerType)
+                {
+                    case CustomerType.New:
+                        bookingsCount = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                                .Where(g => g.Count() == 1).Select(g => g.Key).Count();
+                        break;
+                    case CustomerType.Returning:
+                        bookingsCount = _db.Bookings.AsEnumerable().GroupBy(b => b.UserId)
+                                .Where(g => g.Count() > 1).Select(g => g.Key).Count();
+                        break;
+                }
                 await Task.CompletedTask;
             }
             catch (Exception ex)
             {
                 throw;
             }
-
-            return dashboardPieChartVM;
+            return bookingsCount;
         }
     }
 }

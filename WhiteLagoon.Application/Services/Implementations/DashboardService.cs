@@ -1,6 +1,7 @@
 ﻿using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Application.Services.Interfaces;
-using WhiteLagoon.Domain.SharedModels;
+using WhiteLagoon.Application.Common.Enums;
+using WhiteLagoon.Application.Common.Dtos;
 
 namespace WhiteLagoon.Application.Services.Implementations
 {
@@ -13,39 +14,39 @@ namespace WhiteLagoon.Application.Services.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RadialBarChartVM> GetBookingsChartDataAsync()
+        public async Task<RadialBarChartDto> GetBookingsChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
-        public async Task<RadialBarChartVM> GetRevenueChartDataAsync()
+        public async Task<RadialBarChartDto> GetRevenueChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetBookingsChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetRevenueChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
-        public async Task<RadialBarChartVM> GetRegisteredUserChartDataAsync()
+        public async Task<RadialBarChartDto> GetRegisteredUserChartDataAsync()
         {
-            RadialBarChartVM dashboardRadialBarChartVM = await _unitOfWork.Dashboard.GetRegisteredUserChartDataAsync();
+            RadialBarChartDto chartData = await _unitOfWork.Dashboard.GetRegisteredUserChartDataAsync();
         
-            return dashboardRadialBarChartVM;
+            return chartData;
         }
 
-        public async Task<DashboardLineChartVM> GetMemberAndBookingChartDataAsync()
+        public async Task<DashboardLineChartDto> GetMemberAndBookingChartDataAsync()
         {
-            DashboardLineChartVM dashboardLineChartVM = await _unitOfWork.Dashboard.GetMemberAndBookingChartDataAsync();
-        
-            return dashboardLineChartVM;
+            DashboardLineChartDto dashboardLineChart = await _unitOfWork.Dashboard.GetMemberAndBookingChartDataAsync();
+
+            return dashboardLineChart;
         }
 
-        public async Task<DashboardPieChartVM> GetBookingPieChartDataAsync()
+        public async Task<int> GetCustomerBookingsAsync(CustomerType customerType)
         {
-            DashboardPieChartVM dashboardPieChartVM = await _unitOfWork.Dashboard.GetBookingPieChartDataAsync();
-        
-            return dashboardPieChartVM;
+            int bookingsCount = await _unitOfWork.Dashboard.GetCustomerBookingsAsync(customerType);
+
+            return bookingsCount;
         }
     }
 }
